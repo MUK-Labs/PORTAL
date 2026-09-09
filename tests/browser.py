@@ -17,10 +17,11 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 def fixture_routes(page,url):
     def respond(route):
-        name='Tutor' if '/Tutor/' in route.request.url else 'PianoRules'
+        name='Tutor' if '/Tutor/' in route.request.url else ('Tesserakt 2.0' if '/TesserAkt/' in route.request.url else 'PianoRules')
         manifest={'version':1,'title':name,'description':'Test fixture only.','category':'learning' if name=='Tutor' else 'performance','project':'../','preview':url+'templates/portal/preview.svg','embed':url+'templates/portal/','people':['Fixture author']}
         route.fulfill(content_type='application/json',headers={'Access-Control-Allow-Origin':'*'},body=json.dumps(manifest))
     page.route('https://muk-research.github.io/*/portal/metadata.json',respond)
+    page.route('https://adrianartacho.github.io/TesserAkt/portal/metadata.json',respond)
 
 with tempfile.TemporaryDirectory() as temp:
     shutil.copytree(ROOT/'_site',Path(temp)/'PORTAL')
@@ -39,8 +40,8 @@ with tempfile.TemporaryDirectory() as temp:
         page=context.new_page();watch(page);fixture_routes(page,url)
         page.add_init_script("window.__micRequests=0;const original=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async(options)=>{window.__micRequests++;window.__micStream=await original(options);return window.__micStream;};")
         page.goto(url)
-        expect(page.locator('.project-card')).to_have_count(2)
-        expect(page.locator('#project-count')).to_have_text('02 projects')
+        expect(page.locator('.project-card')).to_have_count(3)
+        expect(page.locator('#project-count')).to_have_text('03 projects')
         assert page.locator('iframe').count()==0
         assert page.evaluate('window.__micRequests')==0
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
@@ -62,8 +63,8 @@ with tempfile.TemporaryDirectory() as temp:
         expect(page.locator('#signal-field')).to_have_attribute('data-microphone','off')
         assert page.evaluate('window.__micStream.getTracks().every(t=>t.readyState==="ended")')
         page.get_by_role('button',name='Performance',exact=True).click()
-        expect(page.locator('.project-card')).to_have_count(1)
-        expect(page.locator('.project-card h3')).to_have_text('PianoRules')
+        expect(page.locator('.project-card')).to_have_count(2)
+        expect(page.locator('.project-card h3')).to_have_text(['PianoRules','Tesserakt 2.0'])
         page.get_by_role('button',name='All projects',exact=True).click()
         page.get_by_role('button',name='Archive',exact=True).click()
         expect(page.locator('.event-row')).to_have_count(1)
@@ -79,7 +80,7 @@ with tempfile.TemporaryDirectory() as temp:
         context=browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
         page=context.new_page();fixture_routes(page,url)
         page.add_init_script("Object.defineProperty(window,'localStorage',{get(){throw new Error('storage disabled')}})")
-        page.goto(url);expect(page.locator('.project-card')).to_have_count(2)
+        page.goto(url);expect(page.locator('.project-card')).to_have_count(3)
         expect(page.locator('#motion-toggle')).to_have_attribute('aria-pressed','false')
         expect(page.locator('#microphone-toggle')).to_be_disabled();context.close()
         context=browser.new_context();page=context.new_page();fixture_routes(page,url)
@@ -103,10 +104,10 @@ with tempfile.TemporaryDirectory() as temp:
         context=browser.new_context(viewport={'width':1440,'height':1000})
         page=context.new_page();watch(page)
         page.goto(url)
-        expect(page.locator('.project-card[data-source="manifest"]')).to_have_count(2,timeout=15000)
+        expect(page.locator('.project-card[data-source="manifest"]')).to_have_count(3,timeout=15000)
         expect(page.locator('#project-notice')).to_be_hidden()
         assert page.locator('[data-project="440hz"]').count()==0
-        for name in ['pianorules','tutor']:
+        for name in ['pianorules','tutor','tesserakt']:
             card=page.locator(f'[data-project="{name}"]')
             card.scroll_into_view_if_needed()
             expect(card.locator('img')).to_have_count(1)
@@ -122,9 +123,19 @@ with tempfile.TemporaryDirectory() as temp:
                     frame.get_by_role('button',name='Dm7',exact=True).click()
                     expect(frame.locator('#chord-label')).to_have_text('D · F · A · C')
                     frame.locator('#mode').click()
-                else:
+                elif name=='tutor':
                     frame.locator('#dynamics').fill('16');expect(frame.locator('#dynamics-value')).to_have_text('+16')
                     frame.locator('#reset').click();expect(frame.locator('#dynamics-value')).to_have_text('0')
+                else:
+                    for index,label in enumerate(['Operators','Bridges','Morphisms','Agents']):
+                        control=frame.locator(f'[data-layer="{index}"]')
+                        control.click();expect(control).to_have_attribute('aria-pressed','true')
+                        expect(frame.locator('[data-layer-title]')).to_contain_text(label)
+                    frame.get_by_role('button',name='Send a pulse',exact=True).click()
+                    frame.get_by_role('button',name='Pause motion',exact=True).click()
+                    expect(frame.locator('[data-motion]')).to_have_attribute('aria-pressed','false')
+                    frame.get_by_role('button',name='Enable motion',exact=True).click()
+                    assert card.locator('a',has_text='Open project').get_attribute('href')=='https://adrianartacho.github.io/TesserAkt/site/'
                 assert 180 <= card.locator('iframe').evaluate('(el)=>el.getBoundingClientRect().height') <= 520
             except Exception:
                 print('PREVIEW DIAGNOSTICS:',name,errors,card.locator('.embed-region p').text_content(),flush=True)
@@ -140,4 +151,4 @@ with tempfile.TemporaryDirectory() as temp:
         assert not errors,errors
         context.close();browser.close()
     server.shutdown()
-print('PASS: two live project-owned cards and sketches; no 440; full-bleed desktop/mobile field; pointer controls; fake-device microphone opt-in, disable, pause and offscreen stop; denial; reduced motion; disabled storage; safe metadata; sandboxed embeds; filters and Vienna events.')
+print('PASS: three live project-owned cards and sketches including Tesserakt; no 440; full-bleed desktop/mobile field; pointer controls; fake-device microphone opt-in, disable, pause and offscreen stop; denial; reduced motion; disabled storage; safe metadata; sandboxed embeds; filters and Vienna events.')
