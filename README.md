@@ -14,7 +14,7 @@ Reduced motion is respected by default. Motion preference (`prl:motion`) is save
 
 ## Project ownership — now connected
 
-**PianoRules and Tutor own their live portal content in their own repositories.** Their full apps are unchanged. Each publishes:
+**PianoRules, Tutor and Tesserakt 2.0 own their live portal content in their own repositories.** Their full apps are unchanged. Each publishes:
 
 ```text
 portal/
@@ -28,12 +28,13 @@ The central `data/projects.json` contains only an id and a published `manifest` 
 
 - [PianoRules presentation layer](https://github.com/MUK-research/PianoRules/tree/main/portal): choose a chord and switch between cloud/ostinato visual sketches.
 - [Tutor presentation layer](https://github.com/MUK-research/Tutor/tree/main/portal): move dynamics, onset timing and duration sliders to explore the feedback cube. The project credits include Jura Margulis's original idea.
+- [Tesserakt 2.0 presentation layer](https://github.com/AdrianArtacho/TesserAkt/tree/main/portal): explore operators, bridges, morphisms and agents through a silent tesseract projection. Its full presentation lives in `site/`.
 
-Both previews are explicitly illustrative: they are not a recording, measurement or a second copy of the full MIDI engine. **Load interactive preview** creates an opaque-origin `sandbox="allow-scripts"` iframe only after a click. No hardware permission, same-origin access, automatic audio, top navigation or popups are granted. Full applications open through **Open project**. The parent validates resize/ready messages against the iframe window and random token, and reports previews that do not signal readiness.
+The previews are explicitly illustrative: they are not a recording, measurement or a second copy of the full MIDI engine. **Load interactive preview** creates an opaque-origin `sandbox="allow-scripts"` iframe only after a click. No hardware permission, same-origin access, automatic audio, top navigation or popups are granted. Full applications open through **Open project**. The parent validates resize/ready messages against the iframe window and random token, and reports previews that do not signal readiness.
 
 **440 Hz is not listed. Its repository is untouched.** Old local illustration assets may remain unused; they are not the source of the connected project cards.
 
-Failed metadata requests leave the available projects usable and show direct project links plus a notice. The loader still supports optional curated fallbacks for future registry entries, but the current two entries do not use them. Cross-origin project hosts must serve public JSON with suitable CORS headers; GitHub Pages works for these endpoints.
+Failed metadata requests leave the available projects usable and show direct project links plus a notice. The loader still supports optional curated fallbacks for future registry entries, but the current three entries do not use them. Cross-origin project hosts must serve public JSON with suitable CORS headers; GitHub Pages works for these endpoints.
 
 [Project contract and onboarding](docs/PROJECTS.md) · [Reusable starter](templates/portal/)
 
@@ -68,7 +69,7 @@ python tests/browser.py
 # CHROME_BIN=/usr/bin/chromium python tests/browser.py
 ```
 
-The data tests cover metadata, safe URLs, CSV parsing, events/timezones and microphone lifecycle/energy with simulated inputs. Browser tests cover desktop/mobile, subpath assets, filters, motion persistence, denied permissions, simulated microphone start/stop, pause/offscreen cleanup, text sanitisation and sandboxing. An end-to-end section loads the actual public PianoRules/Tutor manifests, images and interactive previews (requires network). Screenshots are stored as the `portal-browser-checks` Actions artifact. These checks are not a physical-microphone or all-browser compatibility certification.
+The data tests cover metadata, safe URLs, CSV parsing, events/timezones and microphone lifecycle/energy with simulated inputs. Browser tests cover desktop/mobile, subpath assets, filters, motion persistence, denied permissions, simulated microphone start/stop, pause/offscreen cleanup, text sanitisation and sandboxing. An end-to-end section loads the actual public PianoRules/Tutor/Tesserakt manifests, images and interactive previews (requires network). Screenshots are stored as the `portal-browser-checks` Actions artifact. These checks are not a physical-microphone or all-browser compatibility certification.
 
 ## Sources and credits
 

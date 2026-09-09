@@ -8,6 +8,10 @@
     {
       "id": "tutor",
       "manifest": "https://muk-research.github.io/Tutor/portal/metadata.json"
+    },
+    {
+      "id": "tesserakt",
+      "manifest": "https://adrianartacho.github.io/TesserAkt/portal/metadata.json"
     }
   ]
 }
