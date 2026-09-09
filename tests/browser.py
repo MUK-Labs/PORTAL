@@ -1,6 +1,4 @@
-"""Browser tests under /PORTAL/. Includes real project-owned endpoints and fake-device microphone checks.
-Install Playwright/Chromium, run npm run build, then python tests/browser.py.
-"""
+"""Browser tests under /PORTAL/, real project endpoints and simulated microphone input."""
 import functools
 import http.server
 import json
@@ -11,30 +9,35 @@ import threading
 import shutil
 from playwright.sync_api import sync_playwright, expect
 
-ROOT = Path(__file__).resolve().parent.parent
-OUTPUT = ROOT / 'test-results'
+ROOT=Path(__file__).resolve().parent.parent
+OUTPUT=ROOT/'test-results'
 OUTPUT.mkdir(exist_ok=True)
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *_): pass
+    def log_message(self,*_):pass
 
-def fixture_routes(page, url):
+def fixture_routes(page,url):
     def respond(route):
-        name = 'Tutor' if '/Tutor/' in route.request.url else 'PianoRules'
-        manifest = {'version':1,'title':name,'description':'Test fixture only.','category':'learning' if name=='Tutor' else 'performance','project':'../','preview':url+'templates/portal/preview.svg','embed':url+'templates/portal/','people':['Fixture author']}
-        route.fulfill(content_type='application/json', headers={'Access-Control-Allow-Origin':'*'}, body=json.dumps(manifest))
+        name='Tutor' if '/Tutor/' in route.request.url else 'PianoRules'
+        manifest={'version':1,'title':name,'description':'Test fixture only.','category':'learning' if name=='Tutor' else 'performance','project':'../','preview':url+'templates/portal/preview.svg','embed':url+'templates/portal/','people':['Fixture author']}
+        route.fulfill(content_type='application/json',headers={'Access-Control-Allow-Origin':'*'},body=json.dumps(manifest))
     page.route('https://muk-research.github.io/*/portal/metadata.json',respond)
 
 with tempfile.TemporaryDirectory() as temp:
-    shutil.copytree(ROOT / '_site', Path(temp) / 'PORTAL')
-    server = http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietHandler,directory=temp))
+    shutil.copytree(ROOT/'_site',Path(temp)/'PORTAL')
+    server=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(QuietHandler,directory=temp))
     threading.Thread(target=server.serve_forever,daemon=True).start()
-    url = f'http://127.0.0.1:{server.server_port}/PORTAL/'
+    url=f'http://127.0.0.1:{server.server_port}/PORTAL/'
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True,executable_path=os.getenv('CHROME_BIN'),args=['--no-sandbox','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream'])
         errors=[]
+        def watch(page):
+            def error(e):
+                errors.append(str(e));print('BROWSER ERROR:',e,flush=True)
+            page.on('pageerror',error)
+            page.on('console',lambda m:print('CONSOLE ERROR:',m.text,flush=True) if m.type=='error' else None)
         context=browser.new_context(viewport={'width':1440,'height':1000},timezone_id='America/New_York')
-        page=context.new_page();page.on('pageerror',lambda error:errors.append(str(error)));fixture_routes(page,url)
-        page.add_init_script("""window.__micRequests=0;const original=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async(options)=>{window.__micRequests++;window.__micStream=await original(options);return window.__micStream;};""")
+        page=context.new_page();watch(page);fixture_routes(page,url)
+        page.add_init_script("window.__micRequests=0;const original=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async(options)=>{window.__micRequests++;window.__micStream=await original(options);return window.__micStream;};")
         page.goto(url)
         expect(page.locator('.project-card')).to_have_count(2)
         expect(page.locator('#project-count')).to_have_text('02 projects')
@@ -73,22 +76,18 @@ with tempfile.TemporaryDirectory() as temp:
         page.screenshot(path=str(OUTPUT/'mobile-fixture.png'),full_page=True)
         page.goto(url+'privacy.html');expect(page.locator('h1')).to_have_text('Privacy & credits.')
         context.close()
-
         context=browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
         page=context.new_page();fixture_routes(page,url)
         page.add_init_script("Object.defineProperty(window,'localStorage',{get(){throw new Error('storage disabled')}})")
         page.goto(url);expect(page.locator('.project-card')).to_have_count(2)
         expect(page.locator('#motion-toggle')).to_have_attribute('aria-pressed','false')
         expect(page.locator('#microphone-toggle')).to_be_disabled();context.close()
-
         context=browser.new_context();page=context.new_page();fixture_routes(page,url)
         page.add_init_script("navigator.mediaDevices.getUserMedia=async()=>{throw new DOMException('Denied','NotAllowedError')}")
         page.goto(url);page.locator('#microphone-toggle').click()
         expect(page.locator('#signal-field')).to_have_attribute('data-microphone','error')
         expect(page.locator('#field-status')).to_contain_text('permission declined');context.close()
-
-        # Text from manifests must not become markup, and embed permissions remain isolated.
-        context=browser.new_context();page=context.new_page();page.on('pageerror',lambda error:errors.append(str(error)))
+        context=browser.new_context();page=context.new_page();watch(page)
         registry={'projects':[{'id':'fixture','manifest':'https://project.example/portal/metadata.json'}]}
         manifest={'version':1,'title':'<img onerror=alert(1)>','project':url,'embed':url+'templates/portal/','repository':'javascript:alert(1)'}
         page.route('**/data/projects.json',lambda route:route.fulfill(content_type='application/json',body=json.dumps(registry)))
@@ -100,10 +99,9 @@ with tempfile.TemporaryDirectory() as temp:
         expect(page.locator('iframe')).to_have_attribute('sandbox','allow-scripts')
         page.frame_locator('iframe').get_by_role('button',name='New pattern').click()
         page.get_by_role('button',name='Close preview').click();expect(page.locator('iframe')).to_have_count(0);context.close()
-
-        # Real end-to-end integration: no mocked manifests, images or preview HTML.
+        # No mocked manifests, thumbnails or HTML in this integration check.
         context=browser.new_context(viewport={'width':1440,'height':1000})
-        page=context.new_page();page.on('pageerror',lambda error:errors.append(str(error)))
+        page=context.new_page();watch(page)
         page.goto(url)
         expect(page.locator('.project-card[data-source="manifest"]')).to_have_count(2,timeout=15000)
         expect(page.locator('#project-notice')).to_be_hidden()
@@ -115,15 +113,23 @@ with tempfile.TemporaryDirectory() as temp:
             assert '/portal/preview.svg' in card.locator('img').get_attribute('src')
             card.get_by_role('button',name='Load interactive preview').click()
             frame=card.frame_locator('iframe')
-            if name=='pianorules':
-                frame.get_by_role('button',name='Dm7',exact=True).click()
-                expect(frame.locator('#chord-label')).to_have_text('D · F · A · C')
-                frame.locator('#mode').click()
-            else:
-                frame.locator('#dynamics').fill('16');expect(frame.locator('#dynamics-value')).to_have_text('+16')
-                frame.locator('#reset').click();expect(frame.locator('#dynamics-value')).to_have_text('0')
-            expect(card.locator('.embed-region p')).to_contain_text('Interactive sketch supplied')
-            assert 180 <= card.locator('iframe').evaluate('(el)=>el.getBoundingClientRect().height') <= 520
+            try:
+                # A streamed iframe can show buttons before its final script/resize runs.
+                # Wait for the explicit ready handshake before sending the first input.
+                expect(card.locator('.embed-region p')).to_contain_text('Interactive sketch supplied',timeout=15000)
+                page.wait_for_timeout(250)
+                if name=='pianorules':
+                    frame.get_by_role('button',name='Dm7',exact=True).click()
+                    expect(frame.locator('#chord-label')).to_have_text('D · F · A · C')
+                    frame.locator('#mode').click()
+                else:
+                    frame.locator('#dynamics').fill('16');expect(frame.locator('#dynamics-value')).to_have_text('+16')
+                    frame.locator('#reset').click();expect(frame.locator('#dynamics-value')).to_have_text('0')
+                assert 180 <= card.locator('iframe').evaluate('(el)=>el.getBoundingClientRect().height') <= 520
+            except Exception:
+                print('PREVIEW DIAGNOSTICS:',name,errors,card.locator('.embed-region p').text_content(),flush=True)
+                page.screenshot(path=str(OUTPUT/f'{name}-failure.png'),full_page=True)
+                raise
             page.screenshot(path=str(OUTPUT/f'{name}-live-preview.png'),full_page=True)
             card.get_by_role('button',name='Close preview').click()
         page.locator('.site-header').scroll_into_view_if_needed();page.wait_for_timeout(100)
