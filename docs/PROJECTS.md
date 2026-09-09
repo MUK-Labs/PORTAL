@@ -54,7 +54,7 @@ Add to the `projects` array in `data/projects.json`:
 
 IDs must be unique, begin with a letter/number and contain only letters, numbers, `_` and `-`. Array order is card order; `enabled: false` hides an entry. URLs can point to different accounts, organizations or custom domains.
 
-The browser retrieves manifests on page load with a 6.5-second timeout and 64 KiB limit per manifest. Valid cards are rendered after requests settle. A failed project does not break the others; a notice supplies a direct project link. An optional `fallback` object can use the metadata contract, resolving relative paths against the central registry. The current collection deliberately has **no duplicate fallback descriptions**: its content lives in the three project repositories.
+The browser retrieves manifests on page load with a 6.5-second timeout and 64 KiB limit per manifest. Valid cards are rendered after requests settle. A failed project does not break the others; a notice supplies a direct project link. An optional `fallback` object can use the metadata contract, resolving relative paths against the central registry. The current collection deliberately has **no duplicate fallback descriptions**: its content lives in the four project repositories.
 
 The manifest server must permit public cross-origin reads, for example `Access-Control-Allow-Origin: *`. A `github.com/.../blob/...` URL is not a published Pages JSON endpoint. No proxy or authentication is attempted; never put secrets in metadata.
 
@@ -86,7 +86,8 @@ A host's frame restrictions can block a preview, so always retain the full proje
 - **PianoRules** owns its metadata, SVG and silent chord-pattern sketch in [PianoRules/portal](https://github.com/MUK-research/PianoRules/tree/main/portal).
 - **Tutor** owns its metadata, SVG and interactive axis sketch in [Tutor/portal](https://github.com/MUK-research/Tutor/tree/main/portal). Its Pages workflow explicitly copies this folder into the public artifact.
 - **Tesserakt 2.0** owns its metadata, four-colour SVG and interactive tesseract sketch in [TesserAkt/portal](https://github.com/AdrianArtacho/TesserAkt/tree/main/portal). Its Pages artifact publishes `portal/` and the full presentation at `site/`.
+- **Expressive Performance Lab** owns its metadata, RGB feature-curve SVG and interactive phrase/Worm sketch in [Klavier/portal](https://github.com/MUK-research/Klavier/tree/main/portal). It is fourth in the registry, with `learning` category and `Performance` tag. Root-based Pages publishing includes the presentation folder without changing the full MIDI app.
 
-The central registry now contains only these three manifest URLs and IDs. 440 Hz is not listed, and its repository was not changed. Their full applications remain unchanged. Update content in the project's folder, let that project's Pages deployment complete, then reload the portal. No central content copy or rebuild is required for a metadata change, subject to the source host's cache.
+The central registry now contains only these four manifest URLs and IDs. 440 Hz is not listed, and its repository was not changed. Their full applications remain unchanged. Update content in the project's folder, let that project's Pages deployment complete, then reload the portal. No central content copy or rebuild is required for a metadata change, subject to the source host's cache.
 
-The browser integration suite tests all three public manifests, project-owned thumbnails and actual sandboxed sketches. When adding projects, update the fixture/count assertions in `tests/core.test.mjs` and `tests/browser.py` to match the intended collection.
+The browser integration suite tests all four public manifests, project-owned thumbnails and actual sandboxed sketches. When adding projects, update the fixture/count assertions in `tests/core.test.mjs` and `tests/browser.py` to match the intended collection.
