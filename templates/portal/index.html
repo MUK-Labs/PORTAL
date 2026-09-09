@@ -12,5 +12,5 @@ function frame(t){raf=0;if(!active||document.hidden)return;if(t-last>40){phase+=
 function sync(){cancelAnimationFrame(raf);draw();if(active&&!document.hidden)raf=requestAnimationFrame(frame);}
 new ResizeObserver(()=>{width=canvas.clientWidth;const d=Math.min(devicePixelRatio||1,1.5);canvas.width=width*d;canvas.height=190*d;if(ctx)ctx.setTransform(d,0,0,d,0,0);draw();parent.postMessage({type:'prl:resize',token,height:document.body.scrollHeight},'*');}).observe(canvas);
 window.addEventListener('message',e=>{if(e.source===parent&&e.data?.token===token&&e.data.type==='prl:visibility'){active=Boolean(e.data.active);sync();}});
-document.addEventListener('visibilitychange',sync);document.querySelector('button').addEventListener('click',()=>{phase+=1.4;draw();});sync();
+document.addEventListener('visibilitychange',sync);document.querySelector('button').addEventListener('click',()=>{phase+=1.4;draw();});sync();parent.postMessage({type:'prl:ready',token},'*');
 </script></body></html>

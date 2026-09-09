@@ -13,6 +13,7 @@
   <title>Performance Research Lab · MUK@OWA</title>
   <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./assets/site.css">
+  <link rel="stylesheet" href="./assets/field.css">
   <script type="module" src="./js/app.mjs"></script>
 </head>
 <body>
@@ -30,18 +31,18 @@
         <div class="hero-actions"><a class="button button-light" href="#projects">Explore the projects <span aria-hidden="true">↘</span></a><a class="text-link" href="#events">Visit the lab <span aria-hidden="true">↗</span></a></div>
       </div>
       <div class="signal-field" id="signal-field">
-        <div class="field-label" aria-hidden="true"><span>01 / SIGNAL FIELD</span><span>GENERATIVE STUDY</span></div>
+        <div class="field-label" aria-hidden="true"><span>01 / SIGNAL FIELD</span><span>MOVE · PLAY · LISTEN</span></div>
         <canvas id="field" aria-hidden="true"></canvas>
-        <div class="field-bottom"><span class="field-hint">Move through the field.</span><button id="motion-toggle" class="small-button" aria-pressed="false" type="button" hidden>Pause motion <span aria-hidden="true">Ⅱ</span></button></div>
+        <div class="field-bottom"><div class="field-controls" role="group" aria-label="Light field controls"><button id="field-pulse" class="small-button" type="button">Send a pulse ↗</button><button id="field-remix" class="small-button" type="button">Remix ↻</button><button id="microphone-toggle" class="small-button" type="button" aria-pressed="false" aria-describedby="field-status">Enable microphone ○</button><span class="mic-meter-track" aria-hidden="true"><span id="mic-meter"></span></span><button id="motion-toggle" class="small-button" aria-pressed="false" type="button" hidden>Pause motion Ⅱ</button></div><p id="field-status" role="status">Move to bend · click or tap for a pulse. Microphone is off.</p></div>
       </div>
       <div class="hero-foot"><span>Bösendorfer Performance Lab</span><span>Otto Wagner Areal <span class="muted">/</span> Vienna</span><a href="#projects" aria-label="Scroll to projects">↓</a></div>
     </section>
     <section class="section wrap" id="projects" aria-labelledby="projects-title">
       <div class="section-heading"><div><p class="eyebrow muted">01 / Open explorations</p><h2 id="projects-title">Ideas you can<br><em>play with.</em></h2></div><p class="section-intro">Tools, experiments and works in progress.<br>Each project is a door into a different way of listening, making and performing.</p></div>
-      <div class="filter-row"><div id="filters" class="filters" role="group" aria-label="Filter projects"><button type="button" data-filter="all" aria-pressed="true">All projects</button><button type="button" data-filter="performance" aria-pressed="false">Performance</button><button type="button" data-filter="learning" aria-pressed="false">Learning</button><button type="button" data-filter="listening" aria-pressed="false">Listening</button></div><span id="project-count" class="micro" role="status"></span></div>
+      <div class="filter-row"><div id="filters" class="filters" role="group" aria-label="Filter projects"><button type="button" data-filter="all" aria-pressed="true">All projects</button><button type="button" data-filter="performance" aria-pressed="false">Performance</button><button type="button" data-filter="learning" aria-pressed="false">Learning</button></div><span id="project-count" class="micro" role="status"></span></div>
       <div id="projects-grid" class="projects-grid" aria-busy="true"><p class="empty-state">Loading the project collection…</p></div>
       <p id="project-notice" class="feed-note" hidden></p>
-      <noscript><p>Project cards need JavaScript. Open <a href="https://muk-research.github.io/PianoRules/">PianoRules</a>, <a href="https://muk-research.github.io/Tutor/">Tutor</a> or <a href="https://github.com/MUK-research/440Hz">440 Hz</a> directly.</p></noscript>
+      <noscript><p>Project cards need JavaScript. Open <a href="https://muk-research.github.io/PianoRules/">PianoRules</a> or <a href="https://muk-research.github.io/Tutor/">Tutor</a> directly.</p></noscript>
       <div class="section-note"><span class="signal-dot" aria-hidden="true"></span><p>Independent projects. One shared space.</p><a class="text-link" href="https://github.com/MUK-research/PORTAL/blob/main/docs/PROJECTS.md">Connect a project <span aria-hidden="true">↗</span></a></div>
     </section>
     <section class="events-section" id="events" aria-labelledby="events-title"><div class="wrap">
