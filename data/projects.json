@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "pianorules",
+      "manifest": "https://muk-research.github.io/PianoRules/portal/metadata.json",
+      "fallback": {
+        "title": "PianoRules",
+        "description": "Give the piano a new set of possibilities. Human-readable rules turn gestures, chords and phrases into responsive musical behaviours.",
+        "category": "performance",
+        "format": "Browser tool",
+        "status": "active",
+        "tags": ["MIDI", "Disklavier", "Interaction"],
+        "preview": "../assets/pianorules.svg",
+        "previewAlt": "Schematic piano-roll illustration, not a screenshot or measured performance.",
+        "project": "https://muk-research.github.io/PianoRules/",
+        "repository": "https://github.com/MUK-research/PianoRules"
+      }
+    },
+    {
+      "id": "tutor",
+      "manifest": "https://muk-research.github.io/Tutor/portal/metadata.json",
+      "fallback": {
+        "title": "Tutor",
+        "description": "See the shape of a phrase. Compare dynamics, onset timing and key duration with a reference, and trace how a performance unfolds.",
+        "category": "learning",
+        "format": "Browser tool",
+        "status": "active",
+        "tags": ["Piano", "Visual feedback", "Practice"],
+        "preview": "../assets/tutor.svg",
+        "previewAlt": "Schematic cube and three coloured performance traces, not measured data.",
+        "project": "https://muk-research.github.io/Tutor/?lesson=test&fullscreen=1",
+        "repository": "https://github.com/MUK-research/Tutor"
+      }
+    },
+    {
+      "id": "440hz",
+      "manifest": "https://muk-research.github.io/440Hz/portal/metadata.json",
+      "fallback": {
+        "title": "440 Hz",
+        "description": "A small ritual for the inner ear. A quiet reminder, a moment to imagine A, and a reference tone to compare it with.",
+        "category": "listening",
+        "format": "Android app",
+        "status": "prototype",
+        "tags": ["Pitch memory", "Listening", "Offline"],
+        "preview": "../assets/pitch.svg",
+        "previewAlt": "440 hertz surrounded by schematic elliptical wave patterns.",
+        "project": "https://github.com/MUK-research/440Hz",
+        "repository": "https://github.com/MUK-research/440Hz"
+      }
+    }
+  ]
+}

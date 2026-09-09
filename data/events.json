@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "opening-2026-06-09",
+      "title": "Wenn Klang Flügel bekommt",
+      "kind": "Open House · Eröffnung",
+      "start": "2026-06-09T10:00:00+02:00",
+      "end": "2026-06-09T16:30:00+02:00",
+      "location": "Bösendorfer Performance Lab · Pavillon 10, Otto Wagner Areal",
+      "description": "Eröffnung des Bösendorfer Performance Lab. Studierende und Lehrende der MUK erforschen die kreativen Möglichkeiten der Bösendorfer Disklavier Edition. Offizielle Eröffnung 15:00–16:30 Uhr. Eintritt frei.",
+      "url": "../Reference/Eroeffnung_BoesendorferPerformanceLab_Programminfo.pdf",
+      "linkLabel": "Programme (PDF)",
+      "published": true
+    }
+  ]
+}

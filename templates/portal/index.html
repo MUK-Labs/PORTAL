@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Project preview — portal starter</title>
+<style>html{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#141b16;color:#c2ebaa;font:12px Arial,sans-serif;padding:16px}header,footer{display:flex;justify-content:space-between;align-items:center;gap:12px}header{font:9px monospace;letter-spacing:1px}canvas{display:block;width:100%;height:190px}button{font:11px Arial,sans-serif;color:#f1f0e9;border:1px solid #485549;background:transparent;padding:7px 10px;border-radius:4px;cursor:pointer}button:focus-visible{outline:2px solid #c2ebaa;outline-offset:3px}footer span{color:#a4aba5;font-size:10px;max-width:65%}</style></head>
+<body><header><span>PORTAL STARTER / VISUAL STUDY</span><span>NO AUDIO</span></header><canvas aria-hidden="true"></canvas><footer><span>A schematic preview, not measured data.</span><button type="button">New pattern ↻</button></footer>
+<script>
+// Standalone by design: sandboxed previews cannot rely on same-origin storage or imports.
+const q=new URLSearchParams(location.search),token=q.get('prlToken'),canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+let width=300,phase=1,raf=0,last=0,active=q.get('motion')!=='off'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+function draw(){if(!ctx)return;ctx.clearRect(0,0,width,190);for(let j=0;j<22;j++){ctx.strokeStyle=['#c2ebaa77','#70bfff66','#ff576866'][j%3];ctx.beginPath();for(let i=0;i<80;i++){const a=i/79*Math.PI*2,x=width/2+Math.cos(a)*(48+j*3),y=94+Math.sin(a)*(18+j*1.5)+Math.sin(a*3+j*.14+phase)*13;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}}
+function frame(t){raf=0;if(!active||document.hidden)return;if(t-last>40){phase+=.02;last=t;draw();}raf=requestAnimationFrame(frame);}
+function sync(){cancelAnimationFrame(raf);draw();if(active&&!document.hidden)raf=requestAnimationFrame(frame);}
+new ResizeObserver(()=>{width=canvas.clientWidth;const d=Math.min(devicePixelRatio||1,1.5);canvas.width=width*d;canvas.height=190*d;if(ctx)ctx.setTransform(d,0,0,d,0,0);draw();parent.postMessage({type:'prl:resize',token,height:document.body.scrollHeight},'*');}).observe(canvas);
+window.addEventListener('message',e=>{if(e.source===parent&&e.data?.token===token&&e.data.type==='prl:visibility'){active=Boolean(e.data.active);sync();}});
+document.addEventListener('visibilitychange',sync);document.querySelector('button').addEventListener('click',()=>{phase+=1.4;draw();});sync();
+</script></body></html>
