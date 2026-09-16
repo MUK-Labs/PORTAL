@@ -1,0 +1,35 @@
+[
+  {
+    "id": "pianorules",
+    "url": "https://muk-research.github.io/PianoRules/portal/metadata.json",
+    "status": 200,
+    "cors": "*",
+    "title": "PianoRules"
+  },
+  {
+    "id": "tesserakt",
+    "url": "https://adrianartacho.github.io/TesserAkt/portal/metadata.json",
+    "status": 200,
+    "cors": "*",
+    "title": "Tesserakt 2.0"
+  },
+  {
+    "id": "klavier",
+    "url": "https://muk-research.github.io/Klavier/portal/metadata.json",
+    "status": 200,
+    "cors": "*",
+    "title": "Expressive Performance Lab"
+  },
+  {
+    "id": "stargaze",
+    "url": "https://muk-research.github.io/Stargaze/portal/metadata.json",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "tutor",
+    "url": "https://muk-research.github.io/Tutor/portal/metadata.json",
+    "status": 200,
+    "cors": "*",
+    "title": "Tutor"
+  }
+]

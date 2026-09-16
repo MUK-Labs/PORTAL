@@ -41,7 +41,7 @@ Required: `title`, plus at least one of `project` or `repository`. Everything el
 
 Current filters are `performance` and `learning`; other categories remain visible under All projects. Matching tags also qualify a card for a filter. Text is plain text, not HTML or Markdown. Relative URLs resolve beside the manifest, never beside the central portal. Links must use HTTPS (localhost HTTP is allowed for development). Thumbnail images may be SVG, WebP, PNG or JPEG.
 
-## 3. Central registry
+## 3. Central registry and automatic publishing
 
 Add to the `projects` array in `data/projects.json`:
 
@@ -52,11 +52,13 @@ Add to the `projects` array in `data/projects.json`:
 }
 ```
 
-IDs must be unique, begin with a letter/number and contain only letters, numbers, `_` and `-`. Array order is card order; `enabled: false` hides an entry. URLs can point to different accounts, organizations or custom domains.
+Use a comma **between** entries, but no trailing comma after the final entry. IDs must be unique, begin with a letter/number and contain only letters, numbers, `_` and `-`. Array order is card order; `enabled: false` hides an entry. URLs can point to different accounts, organizations or custom domains.
 
-The browser retrieves manifests on page load with a 6.5-second timeout and 64 KiB limit per manifest. Valid cards are rendered after requests settle. A failed project does not break the others; a notice supplies a direct project link. An optional `fallback` object can use the metadata contract, resolving relative paths against the central registry. The current collection deliberately has **no duplicate fallback descriptions**: its content lives in the four project repositories.
+Commit to `main`: **Publish portal** automatically validates the registry, builds `_site/`, checks public manifests and previews, and deploys to Pages. No manual compilation or committed build folder is needed. `npm test` and `npm run build` can also be run locally before committing. Tests derive count and order from the registry, so adding or reordering entries no longer requires editing a fixed four-project assertion. Known previews have additional interaction tests; new projects receive generic image, sandbox, sizing and ready-handshake checks.
 
-The manifest server must permit public cross-origin reads, for example `Access-Control-Allow-Origin: *`. A `github.com/.../blob/...` URL is not a published Pages JSON endpoint. No proxy or authentication is attempted; never put secrets in metadata.
+The browser retrieves manifests on page load with a 6.5-second timeout and 64 KiB limit per manifest. Valid cards are rendered after requests settle. A failed project does not break the others; a notice supplies a direct project link. An optional `fallback` object can use the metadata contract, resolving relative paths against the central registry. The current collection deliberately has **no duplicate fallback descriptions**: its content lives in the project repositories.
+
+The manifest server must permit public cross-origin reads, for example `Access-Control-Allow-Origin: *`. A `github.com/.../blob/...` URL is not a published Pages JSON endpoint. No proxy or authentication is attempted; never put secrets in metadata. Browser integration saves `project-endpoints.json` with HTTP/CORS diagnostics and fails when a registered manifest is not publicly available. Publishing the central portal cannot by itself publish another repository's files.
 
 ## 4. Interactive previews
 
@@ -81,13 +83,14 @@ The parent sends `{type:'prl:visibility', token, active:boolean}` when visibilit
 
 A host's frame restrictions can block a preview, so always retain the full project link. Test the real iframe, not merely the standalone page, with keyboard controls and a narrow screen.
 
-## Current connections
+## Registered collection
 
-- **PianoRules** owns its metadata, SVG and silent chord-pattern sketch in [PianoRules/portal](https://github.com/MUK-research/PianoRules/tree/main/portal).
-- **Tutor** owns its metadata, SVG and interactive axis sketch in [Tutor/portal](https://github.com/MUK-research/Tutor/tree/main/portal). Its Pages workflow explicitly copies this folder into the public artifact.
-- **Tesserakt 2.0** owns its metadata, four-colour SVG and interactive tesseract sketch in [TesserAkt/portal](https://github.com/AdrianArtacho/TesserAkt/tree/main/portal). Its Pages artifact publishes `portal/` and the full presentation at `site/`.
-- **Expressive Performance Lab** owns its metadata, RGB feature-curve SVG and interactive phrase/Worm sketch in [Klavier/portal](https://github.com/MUK-research/Klavier/tree/main/portal). It is fourth in the registry, with `learning` category and `Performance` tag. Root-based Pages publishing includes the presentation folder without changing the full MIDI app.
+Display order, as edited on 16 September 2026:
 
-The central registry now contains only these four manifest URLs and IDs. 440 Hz is not listed, and its repository was not changed. Their full applications remain unchanged. Update content in the project's folder, let that project's Pages deployment complete, then reload the portal. No central content copy or rebuild is required for a metadata change, subject to the source host's cache.
+1. **PianoRules** owns its metadata, SVG and silent chord-pattern sketch in [PianoRules/portal](https://github.com/MUK-research/PianoRules/tree/main/portal).
+2. **Tesserakt 2.0** owns its metadata, four-colour SVG and interactive tesseract sketch in [TesserAkt/portal](https://github.com/AdrianArtacho/TesserAkt/tree/main/portal). Its Pages artifact publishes `portal/` and the full presentation at `site/`.
+3. **Expressive Performance Lab** owns its metadata, RGB feature-curve SVG and interactive phrase/Worm sketch in [Klavier/portal](https://github.com/MUK-research/Klavier/tree/main/portal). Its `learning` category and `Performance` tag place it in both filters; the full MIDI app is unchanged.
+4. **Stargaze** owns its metadata, celestial/gaze SVG and silent path sketch in [Stargaze/portal](https://github.com/MUK-research/Stargaze/tree/main/portal). It is a `performance` prototype. The embedded sketch uses neither a camera nor MIDI; the full gaze-controlled instrument opens separately.
+5. **Tutor** owns its metadata, SVG and interactive axis sketch in [Tutor/portal](https://github.com/MUK-research/Tutor/tree/main/portal). Its Pages workflow explicitly copies this folder into the public artifact.
 
-The browser integration suite tests all four public manifests, project-owned thumbnails and actual sandboxed sketches. When adding projects, update the fixture/count assertions in `tests/core.test.mjs` and `tests/browser.py` to match the intended collection.
+The central registry contains only these five manifest URLs and IDs. 440 Hz is not listed, and its repository was not changed. Update content in the project's folder, let that project's Pages deployment complete, then reload the portal. No central content copy or rebuild is required for a metadata change, subject to the source host's cache. Registry changes themselves are automatically built and deployed from this repository.

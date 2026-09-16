@@ -12,30 +12,30 @@ The graphic occupies the full width of the opening section rather than a small p
 
 Reduced motion is respected by default. Motion preference (`prl:motion`) is saved locally when possible. A paused field disables microphone activation until motion is enabled; rendering stops in background tabs and offscreen. Canvas resolution/frame rate are capped. See [the privacy notice](privacy.html).
 
-## Project ownership — now connected
+## Project ownership — registered collection
 
-**PianoRules, Tutor, Tesserakt 2.0 and Expressive Performance Lab own their live portal content in their own repositories.** Their full apps are unchanged. Each publishes:
+**PianoRules, Tesserakt 2.0, Expressive Performance Lab, Stargaze and Tutor own their portal content in their own repositories.** This is the display order in `data/projects.json`; their full apps are unchanged. Each presentation layer uses:
 
 ```text
 portal/
 ├── metadata.json
 ├── preview.svg
-├── index.html
-└── README.md
+└── index.html
 ```
 
-The central `data/projects.json` contains only an id and a published `manifest` URL for each project. There is no second copy of their descriptions, thumbnails or credits in the registry. The browser fetches metadata on page load; all relative assets and links resolve beside the project's manifest. After a project's Pages deployment/cache updates, reload the portal to see its new content without editing this repository.
+A project may also include a `portal/README.md` for maintenance notes. The central `data/projects.json` contains only an id and a published `manifest` URL for each project. There is no second copy of their descriptions, thumbnails or credits in the registry. The browser fetches metadata on page load; all relative assets and links resolve beside the project's manifest. After a project's Pages deployment/cache updates, reload the portal to see its new content without editing this repository.
 
 - [PianoRules presentation layer](https://github.com/MUK-research/PianoRules/tree/main/portal): choose a chord and switch between cloud/ostinato visual sketches.
-- [Tutor presentation layer](https://github.com/MUK-research/Tutor/tree/main/portal): move dynamics, onset timing and duration sliders to explore the feedback cube. The project credits include Jura Margulis's original idea.
 - [Tesserakt 2.0 presentation layer](https://github.com/AdrianArtacho/TesserAkt/tree/main/portal): explore operators, bridges, morphisms and agents through a silent tesseract projection. Its full presentation lives in `site/`.
-- [Expressive Performance Lab presentation layer](https://github.com/MUK-research/Klavier/tree/main/portal): shape a dynamic arc and timing sway, following illustrative feature curves and a fading Performance Worm. The fourth project appears under Learning and Performance; its full MIDI app stays at the Klavier root.
+- [Expressive Performance Lab presentation layer](https://github.com/MUK-research/Klavier/tree/main/portal): shape a dynamic arc and timing sway, following illustrative feature curves and a fading Performance Worm. It appears under Learning and Performance; its full MIDI app stays at the Klavier root.
+- [Stargaze presentation layer](https://github.com/MUK-research/Stargaze/tree/main/portal): a silent, abstract sky-and-gaze sketch introducing a gaze-controlled performance for a self-playing piano. The preview does not use a camera or MIDI; the full application handles those permissions separately.
+- [Tutor presentation layer](https://github.com/MUK-research/Tutor/tree/main/portal): move dynamics, onset timing and duration sliders to explore the feedback cube. The project credits include Jura Margulis's original idea.
 
 The previews are explicitly illustrative: they are not a recording, measurement or a second copy of the full MIDI engine. **Load interactive preview** creates an opaque-origin `sandbox="allow-scripts"` iframe only after a click. No hardware permission, same-origin access, automatic audio, top navigation or popups are granted. Full applications open through **Open project**. The parent validates resize/ready messages against the iframe window and random token, and reports previews that do not signal readiness.
 
 **440 Hz is not listed. Its repository is untouched.** Old local illustration assets may remain unused; they are not the source of the connected project cards.
 
-Failed metadata requests leave the available projects usable and show direct project links plus a notice. The loader still supports optional curated fallbacks for future registry entries, but the current four entries do not use them. Cross-origin project hosts must serve public JSON with suitable CORS headers; GitHub Pages works for these endpoints.
+Failed metadata requests leave the available projects usable and show direct project links plus a notice. The loader still supports optional curated fallbacks for future registry entries, but the registered entries do not use them. Cross-origin project hosts must serve public JSON with suitable CORS headers. Registration alone does not publish a project's `portal/` folder: its manifest URL must already be publicly reachable.
 
 [Project contract and onboarding](docs/PROJECTS.md) · [Reusable starter](templates/portal/)
 
@@ -52,6 +52,8 @@ If a feed fails, the local `data/events.json` is used with a visible notice. Thi
 ## Publish and test
 
 In **Settings → Pages → Source**, select **GitHub Actions**. The included **Publish portal** workflow validates, builds `_site/`, runs browser checks on push/manual runs, deploys and verifies the public commit. Branch publishing from root bypasses the events build; use Actions to avoid duplicate deployments. Existing source/reference material is preserved, and repository visibility is not changed.
+
+**Registry edits do not require manual compilation.** Commit valid JSON to `main`; the workflow runs the build and deployment. `_site/` is generated and uploaded, not committed. Project counts, numbering and browser-test expectations follow the registry order rather than a fixed four-project list. The build validates IDs, duplicates, manifest URLs and JSON syntax before packaging. Browser checks fail with an endpoint report when a registered public manifest is unavailable.
 
 Node 22+; no npm dependencies:
 
@@ -70,7 +72,7 @@ python tests/browser.py
 # CHROME_BIN=/usr/bin/chromium python tests/browser.py
 ```
 
-The data tests cover metadata, safe URLs, CSV parsing, events/timezones and microphone lifecycle/energy with simulated inputs. Browser tests cover desktop/mobile, subpath assets, filters, motion persistence, denied permissions, simulated microphone start/stop, pause/offscreen cleanup, text sanitisation and sandboxing. An end-to-end section loads the actual public PianoRules/Tutor/Tesserakt/Klavier manifests, images and interactive previews (requires network). Screenshots are stored as the `portal-browser-checks` Actions artifact. These checks are not a physical-microphone or all-browser compatibility certification.
+The data tests cover metadata, registry validation, safe URLs, CSV parsing, events/timezones and microphone lifecycle/energy with simulated inputs. Browser tests cover desktop/mobile, subpath assets, filters, motion persistence, denied permissions, simulated microphone start/stop, pause/offscreen cleanup, text sanitisation and sandboxing. An end-to-end section loads all enabled projects' actual public manifests, images and optional interactive previews (requires network), including Stargaze's keyboard input and parent-controlled motion pause. Screenshots, endpoint diagnostics and the result summary are stored as the `portal-browser-checks` Actions artifact. These checks are not a physical-microphone, eye-tracker or all-browser compatibility certification.
 
 ## Sources and credits
 
