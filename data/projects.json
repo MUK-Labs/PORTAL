@@ -12,7 +12,7 @@
     {
       "id": "klavier",
       "manifest": "https://muk-research.github.io/Klavier/portal/metadata.json"
-    }
+    },
     {
       "id": "stargaze",
       "manifest": "https://muk-research.github.io/Stargaze/portal/metadata.json"
@@ -20,6 +20,6 @@
     {
       "id": "tutor",
       "manifest": "https://muk-research.github.io/Tutor/portal/metadata.json"
-    },
+    }
   ]
 }

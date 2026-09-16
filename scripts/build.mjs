@@ -5,6 +5,23 @@ import { fetchText, parseCSV, normaliseEvents, safeURL } from '../js/core.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicBase = 'https://muk-research.github.io/PORTAL/data/events.json';
 
+/** Validate the editable registry without fixing its length or display order. */
+export function validateRegistry(registry) {
+  if (!registry || registry.version !== 1 || !Array.isArray(registry.projects))
+    throw new Error('data/projects.json: expected version 1 and a projects array');
+  const ids = new Set();
+  for (const entry of registry.projects) {
+    if (!entry || typeof entry.id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(entry.id))
+      throw new Error('data/projects.json: every project needs a valid id');
+    if (ids.has(entry.id)) throw new Error(`data/projects.json: duplicate project id ${entry.id}`);
+    ids.add(entry.id);
+    if (!safeURL(entry.manifest)) throw new Error(`data/projects.json: invalid manifest URL for ${entry.id}`);
+    if (entry.enabled != null && typeof entry.enabled !== 'boolean')
+      throw new Error(`data/projects.json: enabled must be a boolean for ${entry.id}`);
+  }
+  return registry;
+}
+
 /** The browser only reads a same-origin snapshot: no Google scripts, keys or CORS proxy. */
 export async function resolveEventFeed(config, saved, fetcher = fetchText) {
   normaliseEvents(saved, publicBase); // A broken local fallback must fail the build.
@@ -29,6 +46,10 @@ export async function resolveEventFeed(config, saved, fetcher = fetchText) {
 
 export async function build() {
   const target = resolve(root, '_site');
+  let registry;
+  try { registry = JSON.parse(await readFile(resolve(root,'data/projects.json'),'utf8')); }
+  catch (error) { throw new Error(`Cannot read data/projects.json; check JSON commas and quoting. ${error.message}`); }
+  validateRegistry(registry);
   const config = JSON.parse(await readFile(resolve(root,'data/config.json'),'utf8'));
   const saved = JSON.parse(await readFile(resolve(root,'data/events.json'),'utf8'));
   const events = await resolveEventFeed(config,saved);
@@ -39,6 +60,6 @@ export async function build() {
   await writeFile(resolve(target,'.nojekyll'),'');
   await writeFile(resolve(target,'data/events.json'),JSON.stringify(events,null,2)+'\n');
   await writeFile(resolve(target,'data/build.json'),JSON.stringify({commit:process.env.GITHUB_SHA||'local',builtAt:new Date().toISOString()},null,2)+'\n');
-  console.log(`Built _site/ · ${events.events.length} event(s) · feed: ${events.feed.state}`);
+  console.log(`Built _site/ · ${registry.projects.filter(p=>p.enabled!==false).length} project(s) · ${events.events.length} event(s) · feed: ${events.feed.state}`);
 }
 if(process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) await build();
