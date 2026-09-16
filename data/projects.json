@@ -6,10 +6,6 @@
       "manifest": "https://muk-research.github.io/PianoRules/portal/metadata.json"
     },
     {
-      "id": "tutor",
-      "manifest": "https://muk-research.github.io/Tutor/portal/metadata.json"
-    },
-    {
       "id": "tesserakt",
       "manifest": "https://adrianartacho.github.io/TesserAkt/portal/metadata.json"
     },
@@ -17,5 +13,13 @@
       "id": "klavier",
       "manifest": "https://muk-research.github.io/Klavier/portal/metadata.json"
     }
+    {
+      "id": "stargaze",
+      "manifest": "https://muk-research.github.io/Stargaze/portal/metadata.json"
+    },
+    {
+      "id": "tutor",
+      "manifest": "https://muk-research.github.io/Tutor/portal/metadata.json"
+    },
   ]
 }
