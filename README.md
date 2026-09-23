@@ -1,4 +1,4 @@
-# [Performance Research Lab · MUK@OWA](https://muk-research.github.io/PORTAL/)
+# [Performance Research Lab · MUK@OWA](https://muk-labs.github.io/PORTAL/)
 
 A responsive, dependency-free portal around the Bösendorfer Performance Lab. Dark editorial typography, a full-bleed interactive RGB ribbon field and the supplied event artwork. No framework, external fonts, analytics or runtime API keys.
 
